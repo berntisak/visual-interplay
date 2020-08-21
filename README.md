@@ -1,2 +1,6 @@
-# link-idf-example
-Example for using link-idf
+# Visual Interplay
+
+* ESP32
+* FastLED
+* Ableton Link
+* MQTT
