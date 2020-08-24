@@ -1,7 +1,5 @@
 #pragma once
 
-#include "FastLED.h"
-
 // This function fills the palette with totally random colors.
 void SetupTotallyRandomPalette()
 {
@@ -23,7 +21,7 @@ void SetupBlackAndWhiteStripedPalette()
     currentPalette[4] = CRGB::White;
     currentPalette[8] = CRGB::White;
     currentPalette[12] = CRGB::White;
-    
+
 }
 
 // This function sets up a palette of purple and green stripes.
@@ -32,12 +30,12 @@ void SetupPurpleAndGreenPalette()
     CRGB purple = CHSV( HUE_PURPLE, 255, 255);
     CRGB green  = CHSV( HUE_GREEN, 255, 255);
     CRGB black  = CRGB::Black;
-    
+
     currentPalette = CRGBPalette16(
-                                   green,  green,  black,  black,
-                                   purple, purple, black,  black,
-                                   green,  green,  black,  black,
-                                   purple, purple, black,  black );
+            green,  green,  black,  black,
+            purple, purple, black,  black,
+            green,  green,  black,  black,
+            purple, purple, black,  black );
 }
 
 
@@ -51,12 +49,12 @@ const TProgmemPalette16 myRedWhiteBluePalette_p =
     CRGB::Gray, // 'white' is too bright compared to red and blue
     CRGB::Blue,
     CRGB::Black,
-    
+
     CRGB::Red,
     CRGB::Gray,
     CRGB::Blue,
     CRGB::Black,
-    
+
     CRGB::Red,
     CRGB::Red,
     CRGB::Gray,
