@@ -1,34 +1,8 @@
-/*
-#include <driver/gpio.h>
-#include <driver/timer.h>
-
-#include "esp_event.h"
-#include "esp_spi_flash.h"
-#include "esp_wifi.h"
-#include "esp_netif.h"
-
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-#include <freertos/task.h>
-#include <freertos/queue.h>
-#include <freertos/event_groups.h>
-#include <protocol_examples_common.h>
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-
-#include "lwip/err.h"
-#include "lwip/sys.h"
-#include "lwip/sockets.h"
-#include "lwip/dns.h"
-#include "lwip/netdb.h"
-*/
-
 #include "esp_system.h"
 #include <nvs_flash.h>
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 // Local
 
@@ -40,6 +14,8 @@
 
 extern "C" void app_main()
 {
+
+  message_q = xQueueCreate( 2, sizeof(float) );
 
   ESP_LOGI(TAG, "[APP] Startup..");
   ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
@@ -56,7 +32,8 @@ extern "C" void app_main()
   ESP_ERROR_CHECK(ret);
 
   vi_wifi::init();
-  vi_link::init();
+  //vi_link::init(ls);
+  //auto start_link = new vi_link::LinkConnect(ls);
   vi_led::init();
   vi_mqtt::init();
 

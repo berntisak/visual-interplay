@@ -1,6 +1,9 @@
 #pragma once
 
 #include "FastLED.h"
+#include "freertos/queue.h"
+
+#include "configuration.h"
 
 #define LED GPIO_NUM_2
 #define NUM_LEDS 60

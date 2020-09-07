@@ -117,9 +117,16 @@ namespace vi_led {
   }
 
   void init(void) {
-
     FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
+
+    while(1) {
+      float value;
+      if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+      {
+          printf("Got: %f\n", value);
+      }
+    }
 
   }
 

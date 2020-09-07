@@ -1,6 +1,9 @@
 #pragma once
+#include <string>
+#include <stdlib.h>
 #include "mqtt_client.h"
 #include "esp_log.h"
+#include "freertos/queue.h"
 
 #include "configuration.h"
 
