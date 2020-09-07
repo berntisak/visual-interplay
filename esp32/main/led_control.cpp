@@ -119,11 +119,19 @@ namespace vi_led {
 
   void run(void * params) {
     float value = 0.0f;
+    uint8_t pos = 0;
     while(1) {
       if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
       {
-          printf("Got: %f\n", value);
+          //printf("Got: %f\n", value);
+          uint8_t pos = NUM_LEDS * value;
+          FastLED.clear(true);
+          leds[pos].red = 255;
+          FastLED.show();
       }
+
+      //portYIELD();
+
     }
   }
 
