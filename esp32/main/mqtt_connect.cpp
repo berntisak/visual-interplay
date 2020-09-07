@@ -2,6 +2,7 @@
 
 namespace vi_mqtt {
 
+  QueueHandle_t message_q;
   /**** MQTT ***/
   static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
   {
@@ -104,14 +105,14 @@ namespace vi_mqtt {
     esp_mqtt_client_start(client);
   }
 
-  void init(void) {
+  void init(QueueHandle_t _message_q) {
     esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
     esp_log_level_set("MQTT_EXAMPLE", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-
+    message_q = _message_q;
     mqtt_app_start();
   }
 }

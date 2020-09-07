@@ -15,7 +15,7 @@
 extern "C" void app_main()
 {
 
-  message_q = xQueueCreate( 2, sizeof(float) );
+  QueueHandle_t message_q = xQueueCreate( 2, sizeof(float) );
 
   ESP_LOGI(TAG, "[APP] Startup..");
   ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
@@ -34,7 +34,7 @@ extern "C" void app_main()
   vi_wifi::init();
   //vi_link::init(ls);
   //auto start_link = new vi_link::LinkConnect(ls);
-  vi_led::init();
-  vi_mqtt::init();
+  //vi_led::init(message_q);
+  vi_mqtt::init(message_q);
 
 }

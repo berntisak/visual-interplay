@@ -12,6 +12,6 @@
 
 namespace vi_mqtt {
 
-  void init(void);
+  void init(QueueHandle_t _message_q);
 
 }

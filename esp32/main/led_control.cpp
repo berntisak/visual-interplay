@@ -2,6 +2,7 @@
 
 namespace vi_led {
 
+  QueueHandle_t message_q;
   CRGBPalette16 currentPalette;
   TBlendType currentBlending;
 
@@ -116,17 +117,19 @@ namespace vi_led {
     }
   }
 
-  void init(void) {
+  void init(QueueHandle_t _message_q) {
+    message_q = _message_q;
     FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
 
+    /*
     while(1) {
       float value;
       if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
       {
           printf("Got: %f\n", value);
       }
-    }
+    }*/
 
   }
 

@@ -14,6 +14,6 @@
 
 namespace vi_led {
 
-  void init(void);
+  void init(QueueHandle_t _message_q);
 
 }
