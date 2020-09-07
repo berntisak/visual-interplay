@@ -21,13 +21,6 @@ namespace vi_mqtt {
       case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
         break;
-      /*
-      case MQTT_EVENT_SUBSCRIBED:
-        ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-        msg_id = esp_mqtt_client_publish(client, "/point/0/size/value", "data", 0, 0, 0);
-        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-        break;
-      */
       case MQTT_EVENT_UNSUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
         break;
@@ -37,14 +30,12 @@ namespace vi_mqtt {
       case MQTT_EVENT_DATA:
         {
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-        //printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-        //printf("DATA=%.*s\r\n", event->data_len, event->data);
         std::string vi_topic(event->topic, event->topic_len);
-        //printf("TOPIC2=%s\r\n", vi_topic.c_str());
         if (vi_topic.compare("/point/0/size/value") == 0) {
           float received_data = atof(event->data);
           xQueueSend(message_q, ( void * ) &received_data, ( TickType_t ) 10);
           printf("Found topic %s with data %f\n", vi_topic.c_str(), received_data);
+          printf("In other words: %.*s\n", event->data_len, event->data);
         }
         else if (vi_topic.compare("/point/0/size/func") == 0) {
           std::string size_func(event->data, event->data_len);
@@ -53,9 +44,10 @@ namespace vi_mqtt {
         else if (vi_topic.compare("/point/0/pos/value") == 0) {
           float position = atof(event->data);
           printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
+          printf("In other words: %.*s\n", event->data_len, event->data);
         }
         else 
-            printf("No match found");
+            printf("No match found for TOPIC=%.*s with DATA=%.*s\r\n", event->topic_len, event->topic, event->data_len, event->data);
         break;
         }
       case MQTT_EVENT_ERROR:
