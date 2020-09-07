@@ -117,19 +117,22 @@ namespace vi_led {
     }
   }
 
-  void init(QueueHandle_t _message_q) {
-    message_q = _message_q;
-    FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
-    FastLED.setBrightness(BRIGHTNESS);
-
-    /*
+  void run(void * params) {
     while(1) {
       float value;
       if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
       {
           printf("Got: %f\n", value);
       }
-    }*/
+    }
+  }
+
+  void init(QueueHandle_t _message_q) {
+    message_q = _message_q;
+    FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
+    FastLED.setBrightness(BRIGHTNESS);
+
+    xTaskCreatePinnedToCore(run, "LED", 1000, NULL, 10, NULL, 1);
 
   }
 
