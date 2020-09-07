@@ -53,42 +53,11 @@ namespace vi_mqtt {
     return ESP_OK;
   }
 
-  /*
-     static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
-     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
-     mqtt_event_handler_cb(event_data);
-     }
-     */
-
   static void mqtt_app_start(void)
   {
     esp_mqtt_client_config_t mqtt_cfg = {
       .uri = CONFIG_BROKER_URL,
     };
-#if CONFIG_BROKER_URL_FROM_STDIN
-    char line[128];
-
-    if (strcmp(mqtt_cfg.uri, "FROM_STDIN") == 0) {
-      int count = 0;
-      printf("Please enter url of mqtt broker\n");
-      while (count < 128) {
-        int c = fgetc(stdin);
-        if (c == '\n') {
-          line[count] = '\0';
-          break;
-        } else if (c > 0 && c < 127) {
-          line[count] = c;
-          ++count;
-        }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
-      }
-      mqtt_cfg.uri = line;
-      printf("Broker url: %s\n", line);
-    } else {
-      ESP_LOGE(TAG, "Configuration mismatch: wrong broker url");
-      abort();
-    }
-#endif /* CONFIG_BROKER_URL_FROM_STDIN */
 
     mqtt_cfg.event_handle = mqtt_event_handler_cb;
 
