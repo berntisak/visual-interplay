@@ -15,7 +15,7 @@
 extern "C" void app_main()
 {
 
-  QueueHandle_t message_q = xQueueCreate( 2, sizeof(float) );
+  QueueHandle_t message_q = xQueueCreate( 10, sizeof(float) );
 
   ESP_LOGI(TAG, "[APP] Startup..");
   ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());

@@ -31,26 +31,30 @@ namespace vi_mqtt {
       case MQTT_EVENT_DATA:
         {
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+        float position = atof(event->data);
+        xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 0);
+        /*
         std::string vi_topic(event->topic, event->topic_len);
         if (vi_topic.compare("/point/0/size/value") == 0) {
           float received_data = atof(event->data);
           //xQueueSend(message_q, ( void * ) &received_data, ( TickType_t ) 10);
-          printf("Found topic %s with data %f\n", vi_topic.c_str(), received_data);
-          printf("In other words: %.*s\n", event->data_len, event->data);
+          //printf("Found topic %s with data %f\n", vi_topic.c_str(), received_data);
+          //printf("In other words: %.*s\n", event->data_len, event->data);
         }
         else if (vi_topic.compare("/point/0/size/func") == 0) {
           std::string size_func(event->data, event->data_len);
-          printf("Found topic %s with data %s\n", vi_topic.c_str(), size_func.c_str());
+          //printf("Found topic %s with data %s\n", vi_topic.c_str(), size_func.c_str());
         }
         else if (vi_topic.compare("/point/0/pos/value") == 0) {
           float position = atof(event->data);
-          xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 10);
-          printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
-          printf("In other words: %.*s\n", event->data_len, event->data);
+          xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 0);
+          //printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
+          //printf("In other words: %.*s\n", event->data_len, event->data);
         }
         else 
-            printf("No match found for TOPIC=%.*s with DATA=%.*s\r\n", event->topic_len, event->topic, event->data_len, event->data);
+            //printf("No match found for TOPIC=%.*s with DATA=%.*s\r\n", event->topic_len, event->topic, event->data_len, event->data);
         break;
+        */
         }
       case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -61,48 +65,23 @@ namespace vi_mqtt {
     }
     return ESP_OK;
   }
-
-    /*
-     static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
+  
+  static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
      ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
-     mqtt_event_handler_cb(event_data);
-     }
-     */
+     mqtt_event_handler_cb((esp_mqtt_event_t*)event_data);
+  }
+     
 
   void mqtt_app_start(void)
   {
     esp_mqtt_client_config_t mqtt_cfg = {
       .uri = CONFIG_BROKER_URL,
     };
-#if CONFIG_BROKER_URL_FROM_STDIN
-    char line[128];
 
-    if (strcmp(mqtt_cfg.uri, "FROM_STDIN") == 0) {
-      int count = 0;
-      printf("Please enter url of mqtt broker\n");
-      while (count < 128) {
-        int c = fgetc(stdin);
-        if (c == '\n') {
-          line[count] = '\0';
-          break;
-        } else if (c > 0 && c < 127) {
-          line[count] = c;
-          ++count;
-        }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
-      }
-      mqtt_cfg.uri = line;
-      printf("Broker url: %s\n", line);
-    } else {
-      ESP_LOGE(TAG, "Configuration mismatch: wrong broker url");
-      abort();
-    }
-#endif /* CONFIG_BROKER_URL_FROM_STDIN */
-
-    mqtt_cfg.event_handle = mqtt_event_handler_cb;
+    //mqtt_cfg.event_handle = mqtt_event_handler_cb;
 
     esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-    //esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, client);
+    esp_mqtt_client_register_event(client, MQTT_EVENT_ANY, mqtt_event_handler, client);
     esp_mqtt_client_start(client);
   }
 
@@ -111,6 +90,7 @@ namespace vi_mqtt {
     esp_log_level_set("MQTT_EXAMPLE", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_SSL", ESP_LOG_VERBOSE);
+    esp_log_level_set("TRANSPORT_WS", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
     message_q = _message_q;
