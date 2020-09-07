@@ -13,7 +13,7 @@ maxApi.addHandler('connect', (url) => {
 });
 
 maxApi.addHandler('publish', (topic, value) => {
-    client.publish(topic, value.toString());
+    client.publish(topic, value.toPrecision(6));
     console.log(topic, value);
     maxApi.outlet(value);
 });
