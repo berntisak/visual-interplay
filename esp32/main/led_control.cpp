@@ -118,8 +118,8 @@ namespace vi_led {
   }
 
   void run(void * params) {
+    float value = 0.0f;
     while(1) {
-      float value;
       if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
       {
           printf("Got: %f\n", value);
@@ -132,7 +132,7 @@ namespace vi_led {
     FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
 
-    xTaskCreatePinnedToCore(run, "LED", 1000, NULL, 10, NULL, 1);
+    xTaskCreatePinnedToCore(run, "LED", 8192, NULL, 10, NULL, 1);
 
   }
 
