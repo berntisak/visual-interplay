@@ -34,7 +34,7 @@ namespace vi_mqtt {
         std::string vi_topic(event->topic, event->topic_len);
         if (vi_topic.compare("/point/0/size/value") == 0) {
           float received_data = atof(event->data);
-          xQueueSend(message_q, ( void * ) &received_data, ( TickType_t ) 10);
+          //xQueueSend(message_q, ( void * ) &received_data, ( TickType_t ) 10);
           printf("Found topic %s with data %f\n", vi_topic.c_str(), received_data);
           printf("In other words: %.*s\n", event->data_len, event->data);
         }
@@ -44,6 +44,7 @@ namespace vi_mqtt {
         }
         else if (vi_topic.compare("/point/0/pos/value") == 0) {
           float position = atof(event->data);
+          xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 10);
           printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
           printf("In other words: %.*s\n", event->data_len, event->data);
         }
