@@ -1,4 +1,6 @@
 #include "mqtt_connect.h"
+#include <string>
+#include <stdlib.h>
 
 namespace vi_mqtt {
 
@@ -11,27 +13,23 @@ namespace vi_mqtt {
     switch (event->event_id) {
       case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+        //msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
+        //ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+        msg_id = esp_mqtt_client_subscribe(client, "/point/#", 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-        msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-        ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
         break;
       case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
         break;
-
+      /*
       case MQTT_EVENT_SUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
+        msg_id = esp_mqtt_client_publish(client, "/point/0/size/value", "data", 0, 0, 0);
         ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
         break;
+      */
       case MQTT_EVENT_UNSUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
         break;
@@ -39,10 +37,28 @@ namespace vi_mqtt {
         ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
         break;
       case MQTT_EVENT_DATA:
+        {
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-        printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-        printf("DATA=%.*s\r\n", event->data_len, event->data);
+        //printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+        //printf("DATA=%.*s\r\n", event->data_len, event->data);
+        std::string vi_topic(event->topic, event->topic_len);
+        //printf("TOPIC2=%s\r\n", vi_topic.c_str());
+        if (vi_topic.compare("/point/0/size/value") == 0) {
+          float received_data = atof(event->data);
+          printf("Found topic %s with data %f\n", vi_topic.c_str(), received_data);
+        }
+        else if (vi_topic.compare("/point/0/size/func") == 0) {
+          std::string size_func(event->data, event->data_len);
+          printf("Found topic %s with data %s\n", vi_topic.c_str(), size_func.c_str());
+        }
+        else if (vi_topic.compare("/point/0/pos/value") == 0) {
+          float position = atof(event->data);
+          printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
+        }
+        else 
+            printf("No match found");
         break;
+        }
       case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
         break;

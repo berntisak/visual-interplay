@@ -34,3 +34,6 @@ sdkconfig
 *.exe
 *.out
 *.app
+
+# Node modules
+max/node_modules/
