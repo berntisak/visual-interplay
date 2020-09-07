@@ -34,7 +34,7 @@ extern "C" void app_main()
   vi_wifi::init();
   //vi_link::init(ls);
   //auto start_link = new vi_link::LinkConnect(ls);
-  //vi_led::init(message_q);
+  vi_led::init(message_q);
   vi_mqtt::init(message_q);
 
 }
