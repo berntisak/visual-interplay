@@ -129,7 +129,7 @@ namespace vi_led {
       if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
       {
           //printf("Got: %f\n", value);
-          uint8_t pos = NUM_LEDS * value;
+          uint8_t pos = (NUM_LEDS-1) * value;
           FastLED.clear(true);
           leds[pos].red = 255;
           FastLED.show();
@@ -142,7 +142,9 @@ namespace vi_led {
 
   void init(QueueHandle_t _message_q) {
     message_q = _message_q;
-    xTaskCreatePinnedToCore(run, "LED", 8192, NULL, 10, NULL, 1);
+
+    xTaskCreate(run, "LED", 8192, NULL, 10, NULL);
+
   }
 
 }
