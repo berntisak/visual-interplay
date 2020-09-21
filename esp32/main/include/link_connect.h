@@ -2,6 +2,7 @@
 #ifndef _VI_LINK_H
 #define _VI_LINK_H
 #include <ableton/Link.hpp>
+#include <chrono>
 #include <driver/timer.h>
 #include <freertos/queue.h>
 
