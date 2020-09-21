@@ -2,7 +2,11 @@
 
 namespace vi_link {
 
+    QueueHandle_t message_q;
     CRGB leds[NUM_LEDS];
+
+    float value = 0.0f;
+    uint8_t pos = 0;
 
     unsigned int if_nametoindex(const char* ifName)
     {
@@ -84,6 +88,14 @@ namespace vi_link {
         const auto state = link.captureAudioSessionState();
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
 
+        if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+        {
+            uint8_t pos = (NUM_LEDS-1) * value;
+            FastLED.clear(true);
+            leds[pos] = CRGB::Red;
+            FastLED.show();
+        }
+
         // TODO: Call out to LED Control
 
         portYIELD();
@@ -91,6 +103,8 @@ namespace vi_link {
     }
 
     LinkConnect::LinkConnect(QueueHandle_t _message_q) {
+
+      message_q = _message_q;
 
       FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
       FastLED.setBrightness(BRIGHTNESS);
