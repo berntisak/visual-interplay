@@ -1,5 +1,5 @@
-#include "esp_system.h"
 #include <nvs_flash.h>
+#include "esp_system.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
@@ -7,9 +7,9 @@
 // Local
 
 #include "configuration.h"
+#include "link_connect.h"
 #include "wifi_connect.h"
 #include "mqtt_connect.h"
-#include "link_connect.h"
 
 extern "C" void app_main()
 {

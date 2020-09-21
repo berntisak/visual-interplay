@@ -1,10 +1,11 @@
+#pragma once
 #ifndef _VI_LINK_H
 #define _VI_LINK_H
-#include <driver/timer.h>
 #include <ableton/Link.hpp>
+#include <driver/timer.h>
+#include <freertos/queue.h>
 
 #include "led_control.h" 
-#include "freertos/queue.h"
 
 #define PRINT_LINK_STATE false
 
