@@ -75,28 +75,63 @@ namespace vi_link {
     {
       ableton::Link link(120.0f);
       link.enable(true);
+      const auto quantum = 4.0;
+
+      link.setTempoCallback([](double bpm) {
+        std::cout << "new tempo: " << bpm << std::endl;
+      });
 
       if (PRINT_LINK_STATE)
       {
         xTaskCreate(printTask, "print", 8192, &link, 1, nullptr);
       }
 
+      int beats_last = 0;
+      int beats_next = 0;
+      float rand_pos = (float) std::rand() / RAND_MAX;
+      long prev_time = 0;
+      uint8_t pos = (NUM_LEDS-1);
+
       while (true)
       {
         xSemaphoreTake(userParam, portMAX_DELAY);
 
         const auto state = link.captureAudioSessionState();
+        const auto time = link.clock().micros();
+        const auto beats = state.beatAtTime(time, quantum);
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
+
+        bool updateLED = time.count() - prev_time > 33000;
+        if (updateLED) {
+          FastLED.clear(true);
+        }
+
+        beats_last = floor(beats);
+
+        if (beats_last == beats_next) {
+          rand_pos = (float) std::rand() / RAND_MAX;
+          std::cout << "Boom! Tetris for Jeff! " << rand_pos << std::endl;
+
+          pos = floor((NUM_LEDS-1) * rand_pos);
+
+        }
 
         if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
         {
-            uint8_t pos = (NUM_LEDS-1) * value;
-            FastLED.clear(true);
-            leds[pos] = CRGB::Red;
-            FastLED.show();
+            pos *= value;
         }
 
-        // TODO: Call out to LED Control
+        beats_next = ceil(beats);
+
+       // std::cout << std::fixed << "prev beats: " << beats_last << " |" << 
+       // "next beat: " << std::endl;
+        //std::cout << std::defaultfloat << "| phase: " << floor(phase) << std::endl;
+
+        if (updateLED) {
+          leds[pos] = CRGB::Red;
+          FastLED.show();
+          prev_time = time.count();
+        }
 
         portYIELD();
       }

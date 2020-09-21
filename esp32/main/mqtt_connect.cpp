@@ -66,7 +66,7 @@ namespace vi_mqtt {
         }
       case MQTT_EVENT_ERROR: {
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");     
-        printf("%d\n", event->error_handle->error_type);
+        //printf("%d\n", event->error_handle->error_type);
         break;
       }
       default:
