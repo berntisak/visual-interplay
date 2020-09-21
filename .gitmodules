@@ -1,3 +1,6 @@
 [submodule "components/link-idf"]
 	path = components/link-idf
 	url = https://github.com/mathiasbredholt/link-idf.git
+[submodule "esp32/components/FastLED-idf"]
+	path = esp32/components/FastLED-idf
+	url = git@github.com:bbulkow/FastLED-idf.git

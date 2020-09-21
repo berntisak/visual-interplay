@@ -19,7 +19,13 @@
 
 namespace vi_mqtt {
 
-  void init(QueueHandle_t _message_q);
+  //void init(QueueHandle_t _message_q);
+  
+  class MQTTConnect {
+    public:
+      QueueHandle_t message_q;
+      MQTTConnect();
+  };
 
 }
 #endif

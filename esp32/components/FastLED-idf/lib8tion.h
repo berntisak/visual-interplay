@@ -1,6 +1,11 @@
 #ifndef __INC_LIB8TION_H
 #define __INC_LIB8TION_H
 
+/* defines get_millis() */
+
+#include "freertos/FreeRTOS.h"
+#include "esp_timer.h"
+
 #include "FastLED.h"
 
 #ifndef __INC_LED_SYSDEFS_H
@@ -181,7 +186,7 @@ Lib8tion is pronounced like 'libation': lie-BAY-shun
 #if !defined(__AVR__)
 #include <string.h>
 // for memmove, memcpy, and memset if not defined here
-#endif
+#endif // end of !defined(__AVR__)
 
 #if defined(__arm__)
 
@@ -195,7 +200,7 @@ Lib8tion is pronounced like 'libation': lie-BAY-shun
 // Generic ARM
 #define QADD8_C 1
 #define QADD7_C 1
-#endif
+#endif // end of defined(FASTLED_TEENSY3)
 
 #define QSUB8_C 1
 #define SCALE8_C 1
@@ -213,6 +218,30 @@ Lib8tion is pronounced like 'libation': lie-BAY-shun
 #define AVG15_C 1
 #define BLEND8_C 1
 
+// end of #if defined(__arm__)
+
+#elif defined(ARDUINO_ARCH_APOLLO3)
+
+// Default to using the standard C functions for now
+#define QADD8_C 1
+#define QADD7_C 1
+#define QSUB8_C 1
+#define SCALE8_C 1
+#define SCALE16BY8_C 1
+#define SCALE16_C 1
+#define ABS8_C 1
+#define MUL8_C 1
+#define QMUL8_C 1
+#define ADD8_C 1
+#define SUB8_C 1
+#define EASE8_C 1
+#define AVG8_C 1
+#define AVG7_C 1
+#define AVG16_C 1
+#define AVG15_C 1
+#define BLEND8_C 1
+
+// end of #elif defined(ARDUINO_ARCH_APOLLO3)
 
 #elif defined(__AVR__)
 
@@ -274,7 +303,9 @@ Lib8tion is pronounced like 'libation': lie-BAY-shun
 #define QMUL8_AVRASM 0
 #define EASE8_AVRASM 0
 #define BLEND8_AVRASM 0
-#endif
+#endif // end of !defined(LIB8_ATTINY)
+
+// end of #elif defined(__AVR__)
 
 #else
 
@@ -811,6 +842,9 @@ public:
 #ifdef FASTLED_ARM
   int operator*(int v) { return (v*i) + ((v*f)>>F); }
 #endif
+#ifdef FASTLED_APOLLO3
+  int operator*(int v) { return (v*i) + ((v*f)>>F); }
+#endif
 };
 
 template<class T, int F, int I> static uint32_t operator*(uint32_t v, q<T,F,I> & q) { return q * v; }
@@ -818,6 +852,9 @@ template<class T, int F, int I> static uint16_t operator*(uint16_t v, q<T,F,I> &
 template<class T, int F, int I> static int32_t operator*(int32_t v, q<T,F,I> & q) { return q * v; }
 template<class T, int F, int I> static int16_t operator*(int16_t v, q<T,F,I> & q) { return q * v; }
 #ifdef FASTLED_ARM
+template<class T, int F, int I> static int operator*(int v, q<T,F,I> & q) { return q * v; }
+#endif
+#ifdef FASTLED_APOLLO3
 template<class T, int F, int I> static int operator*(int v, q<T,F,I> & q) { return q * v; }
 #endif
 
@@ -883,16 +920,13 @@ typedef q<uint16_t, 12,4> q124;
 // need to provide a function with this signature:
 //   uint32_t get_millisecond_timer();
 // that provides similar functionality.
-// You can also force use of the get_millisecond_timer function
-// by #defining USE_GET_MILLISECOND_TIMER.
-#if (defined(ARDUINO) || defined(SPARK) || defined(FASTLED_HAS_MILLIS)) && !defined(USE_GET_MILLISECOND_TIMER)
-// Forward declaration of Arduino function 'millis'.
-//uint32_t millis();
-#define GET_MILLIS millis
-#else
-uint32_t get_millisecond_timer();
-#define GET_MILLIS get_millisecond_timer
-#endif
+//
+// On ESP-IDF we have esp_timer_get_time which has microseconds.
+// It's a little expensive to get micros and divide, but.... good for now and later we'll
+// fix that uses it
+
+#define GET_MILLIS() (get_millisecond_timer())
+static inline uint32_t get_millisecond_timer() { return( esp_timer_get_time() / 1000);  }
 
 // beat16 generates a 16-bit 'sawtooth' wave at a given BPM,
 ///        with BPM specified in Q8.8 fixed-point format; e.g.

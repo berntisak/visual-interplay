@@ -28,10 +28,10 @@ extern "C" void app_main()
   }
   ESP_ERROR_CHECK(ret);
 
-  QueueHandle_t message_q = xQueueCreate( 10, sizeof(float) );
 
   vi_wifi::init();
-  vi_mqtt::init(message_q);
-  auto start_link = new vi_link::LinkConnect(message_q);
+  //vi_mqtt::init(message_q);
+  auto mqtt = new vi_mqtt::MQTTConnect();
+  auto start_link = new vi_link::LinkConnect(mqtt);
 
 }

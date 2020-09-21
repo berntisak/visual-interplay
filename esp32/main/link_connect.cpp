@@ -2,7 +2,7 @@
 
 namespace vi_link {
 
-    QueueHandle_t message_q;
+    vi_mqtt::MQTTConnect *mqtt;
     CRGB leds[NUM_LEDS];
 
     float value = 0.0f;
@@ -88,7 +88,7 @@ namespace vi_link {
         const auto state = link.captureAudioSessionState();
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
 
-        if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+        if( xQueueReceive( mqtt->message_q, &( value ), ( TickType_t ) 1) == pdPASS )
         {
             uint8_t pos = (NUM_LEDS-1) * value;
             FastLED.clear(true);
@@ -102,9 +102,9 @@ namespace vi_link {
       }
     }
 
-    LinkConnect::LinkConnect(QueueHandle_t _message_q) {
+    LinkConnect::LinkConnect(vi_mqtt::MQTTConnect *_mqtt) {
 
-      message_q = _message_q;
+      mqtt = _mqtt;
 
       FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
       FastLED.setBrightness(BRIGHTNESS);
@@ -115,10 +115,10 @@ namespace vi_link {
       SemaphoreHandle_t tickSemphr = xSemaphoreCreateBinary();
       timerGroup0Init(100, tickSemphr);
       //xTaskCreate(tickTask, "tick", 8192, tickSemphr, configMAX_PRIORITIES - 1, nullptr);
+      //
       xReturned = xTaskCreate(tickTask, "tick", 8192, tickSemphr, configMAX_PRIORITIES - 1, &xHandle);
       if( xReturned != pdPASS )
       {
-        //ErrorHandler();
         printf("ERROR1!\n");
       }
     }

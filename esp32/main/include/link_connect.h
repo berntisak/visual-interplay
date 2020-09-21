@@ -5,6 +5,7 @@
 #include <driver/timer.h>
 #include <freertos/queue.h>
 
+#include "mqtt_connect.h"
 #include "led_control.h" 
 
 #define PRINT_LINK_STATE false
@@ -14,7 +15,7 @@ namespace vi_link {
   class LinkConnect
   {
     public:
-      LinkConnect(QueueHandle_t _message_q);
+      LinkConnect(vi_mqtt::MQTTConnect *_mqtt);
   };
 
 }

@@ -95,6 +95,11 @@ namespace vi_mqtt {
   }
 
   void init(QueueHandle_t _message_q) {
+  }
+
+  MQTTConnect::MQTTConnect() {
+    message_q = xQueueCreate( 10, sizeof(float) );
+
     esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
     esp_log_level_set("MQTT_EXAMPLE", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);
@@ -102,7 +107,8 @@ namespace vi_mqtt {
     esp_log_level_set("TRANSPORT_WS", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
-    message_q = _message_q;
+
     mqtt_app_start();
   }
+
 }

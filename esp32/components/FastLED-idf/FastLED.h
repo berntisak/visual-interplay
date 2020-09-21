@@ -8,12 +8,17 @@
 #define ESP32
 #define FASTLED_NO_PINMAP
 
+// prefer I2S? Comment this in.
+// Not the default because haven't tried it as much, does work
+#define FASTLED_ESP32_I2S
+
 #include "esp32-hal.h"
 
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)
 #define FASTLED_HAS_PRAGMA_MESSAGE
 #endif
 
+#if 0 // tired of these warning messages
 #define FASTLED_VERSION 3003002
 #ifndef FASTLED_INTERNAL
 #  ifdef FASTLED_HAS_PRAGMA_MESSAGE
@@ -22,6 +27,7 @@
 #    warning FastLED version 3.003.003  (Not really a warning, just telling you here.)
 #  endif
 #endif
+#endif // 0
 
 #ifndef __PROG_TYPES_COMPAT__
 #define __PROG_TYPES_COMPAT__
