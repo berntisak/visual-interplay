@@ -5,8 +5,6 @@
 
 namespace vi_link {
 
-  void init(void);
-
   class LinkConnect
   {
     public:

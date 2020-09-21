@@ -2,8 +2,6 @@
 
 namespace vi_link {
 
-  class LinkConnect {
-
     unsigned int if_nametoindex(const char* ifName)
     {
       return 0;
@@ -90,9 +88,7 @@ namespace vi_link {
       }
     }
 
-    public:
-
-    LinkConnect() {
+    LinkConnect::LinkConnect() {
 
       BaseType_t xReturned;
       TaskHandle_t xHandle = NULL;
@@ -108,5 +104,4 @@ namespace vi_link {
       }
     }
 
-  };
 }
