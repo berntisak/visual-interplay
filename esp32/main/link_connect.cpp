@@ -2,6 +2,8 @@
 
 namespace vi_link {
 
+    CRGB leds[NUM_LEDS];
+
     unsigned int if_nametoindex(const char* ifName)
     {
       return 0;
@@ -88,7 +90,10 @@ namespace vi_link {
       }
     }
 
-    LinkConnect::LinkConnect() {
+    LinkConnect::LinkConnect(QueueHandle_t _message_q) {
+
+      FastLED.addLeds<LED_TYPE, DATA_PIN, GRB>(leds, NUM_LEDS);
+      FastLED.setBrightness(BRIGHTNESS);
 
       BaseType_t xReturned;
       TaskHandle_t xHandle = NULL;

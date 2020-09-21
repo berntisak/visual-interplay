@@ -8,14 +8,11 @@
 
 #include "configuration.h"
 #include "wifi_connect.h"
-#include "link_connect.h"
 #include "mqtt_connect.h"
-#include "led_control.h"
+#include "link_connect.h"
 
 extern "C" void app_main()
 {
-
-  QueueHandle_t message_q = xQueueCreate( 10, sizeof(float) );
 
   ESP_LOGI(TAG, "[APP] Startup..");
   ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
@@ -31,10 +28,10 @@ extern "C" void app_main()
   }
   ESP_ERROR_CHECK(ret);
 
+  QueueHandle_t message_q = xQueueCreate( 10, sizeof(float) );
+
   vi_wifi::init();
-  //vi_link::init(ls);
-  auto start_link = new vi_link::LinkConnect();
-  vi_led::init(message_q);
   vi_mqtt::init(message_q);
+  auto start_link = new vi_link::LinkConnect(message_q);
 
 }

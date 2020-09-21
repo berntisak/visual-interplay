@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _VI_MQTT_H
+#define _VI_MQTT_H
 #include <string>
 #include <stdlib.h>
 #include "esp_log.h"
@@ -20,3 +22,4 @@ namespace vi_mqtt {
   void init(QueueHandle_t _message_q);
 
 }
+#endif

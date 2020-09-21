@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _VI_WIFI_H
+#define _VI_WIFI_H
 #include <stdio.h>
 #include <string.h>
 
@@ -36,3 +38,4 @@ namespace vi_wifi {
 
 }
 
+#endif

@@ -11,7 +11,7 @@ namespace vi_led {
 
 #include "palettes.h"
 
-  CRGB leds[NUM_LEDS];
+  //CRGB leds[NUM_LEDS];
 
   void ChangePalettePeriodically(){
 
@@ -143,8 +143,8 @@ namespace vi_led {
   void init(QueueHandle_t _message_q) {
     message_q = _message_q;
 
-    xTaskCreate(run, "LED", 8192, NULL, 10, NULL);
+    //xTaskCreate(run, "LED", 8192, NULL, 10, NULL);
 
   }
-
+  
 }
