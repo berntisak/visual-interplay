@@ -22,8 +22,14 @@ namespace vi_mqtt {
   //void init(QueueHandle_t _message_q);
   
   class MQTTConnect {
+
     public:
-      QueueHandle_t message_q;
+      static QueueHandle_t message_q;
+
+  	  static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event);
+  	  void mqtt_app_start(void);
+  	  static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
+
       MQTTConnect();
   };
 

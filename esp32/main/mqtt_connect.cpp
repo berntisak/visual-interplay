@@ -2,9 +2,8 @@
 
 namespace vi_mqtt {
 
-  QueueHandle_t message_q;
   /**** MQTT ***/
-  static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
+  esp_err_t MQTTConnect::mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
   {
     esp_mqtt_client_handle_t client = event->client;
     int msg_id;
@@ -31,9 +30,12 @@ namespace vi_mqtt {
       case MQTT_EVENT_DATA:
         {
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+        printf("event data: %.*s\n", event->data_len, event->data);
         float position = atof(event->data);
         //xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 0);
-        xQueueSendFromISR(message_q, ( void * ) &position, NULL);
+        printf("Sending value %f\n", position);
+        xQueueSendFromISR(MQTTConnect::message_q, ( void * ) &position, NULL);
+        printf("Sent!\n");
 
         /*
         std::string vi_topic(event->topic, event->topic_len);
@@ -49,15 +51,9 @@ namespace vi_mqtt {
         }
         else if (vi_topic.compare("/point/0/pos/value") == 0) {
           float position = atof(event->data);
-<<<<<<< HEAD
           xQueueSendFromISR(message_q, ( void * ) &position, NULL);
           printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
           printf("In other words: %.*s\n", event->data_len, event->data);
-=======
-          xQueueSend(message_q, ( void * ) &position, ( TickType_t ) 0);
-          //printf("Found topic %s with data %f\n", vi_topic.c_str(), position);
-          //printf("In other words: %.*s\n", event->data_len, event->data);
->>>>>>> f2c060b47e5e970ae446deef7280e613a687e20b
         }
         else 
             //printf("No match found for TOPIC=%.*s with DATA=%.*s\r\n", event->topic_len, event->topic, event->data_len, event->data);
@@ -76,12 +72,12 @@ namespace vi_mqtt {
     return ESP_OK;
   }
   
-  static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
+  void MQTTConnect::mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
      ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
      mqtt_event_handler_cb((esp_mqtt_event_t*)event_data);
   }
 
-  void mqtt_app_start(void)
+  void MQTTConnect::mqtt_app_start(void)
   {
     esp_mqtt_client_config_t mqtt_cfg = {
       .uri = CONFIG_BROKER_URL,
@@ -94,12 +90,9 @@ namespace vi_mqtt {
     esp_mqtt_client_start(client);
   }
 
-  void init(QueueHandle_t _message_q) {
-  }
+  QueueHandle_t MQTTConnect::message_q = xQueueCreate( 10, sizeof(float) );
 
   MQTTConnect::MQTTConnect() {
-    message_q = xQueueCreate( 10, sizeof(float) );
-
     esp_log_level_set("MQTT_CLIENT", ESP_LOG_VERBOSE);
     esp_log_level_set("MQTT_EXAMPLE", ESP_LOG_VERBOSE);
     esp_log_level_set("TRANSPORT_TCP", ESP_LOG_VERBOSE);

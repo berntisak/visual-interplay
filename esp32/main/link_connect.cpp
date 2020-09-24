@@ -98,8 +98,8 @@ namespace vi_link {
       long time_for_each_led = 0;
       int led_idx = 0;
 
-      vi_anim::Character one = new vi_anim::Character();
-      one.set_size(0.25, 0, 1);
+      auto one = new vi_anim::Character();
+      one->set_size(0.1, 0, 1);
       
       while (true)
       {
@@ -110,18 +110,20 @@ namespace vi_link {
         const auto beats = state.beatAtTime(time, quantum);
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
 
-        if( xQueueReceive( mqtt->message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+        if( xQueueReceive( vi_mqtt::MQTTConnect::message_q, &( value ), ( TickType_t ) 1) == pdPASS )
         {
-            one.set_position(value, beats, 4);
+            std::cout << "value: " << value << std::endl;
+            one->set_position(value, beats, 4);
+            std::cout << "set" << std::endl;
         }
 
         // Everything below should be FPS constrained:
 
-        one.update(beats);
+        one->update(beats);
 
         for (int i = 0; i < NUM_LEDS; i++) {
 
-            leds[i] = one.lfb[i];
+            leds[i] = one->lfb[i];
 
         }
 
@@ -181,7 +183,7 @@ namespace vi_link {
         SemaphoreHandle_t tickSemphr = xSemaphoreCreateBinary();
         timerGroup0Init(100, tickSemphr);
 
-        xReturned = xTaskCreate(tickTask, "tick", 8192, tickSemphr, configMAX_PRIORITIES - 1, &xHandle);
+        xReturned = xTaskCreate(tickTask, "tick", 16000, tickSemphr, configMAX_PRIORITIES - 1, &xHandle);
 
         if( xReturned != pdPASS )
         {
