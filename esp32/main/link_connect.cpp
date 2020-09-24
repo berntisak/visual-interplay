@@ -88,10 +88,16 @@ namespace vi_link {
 
       int beats_last = 0;
       int beats_next = 0;
-      float rand_pos = (float) std::rand() / RAND_MAX;
+      uint8_t rand_pos = 0;
+
       long prev_time = 0;
       uint8_t pos = (NUM_LEDS-1);
-
+      bool updateLED = false;
+      long time_between_beats = (60000 / 120*4) * 1000;
+      long next_beat_in_time = 0;
+      long time_for_each_led = 0;
+      int led_idx = 0;
+      
       while (true)
       {
         xSemaphoreTake(userParam, portMAX_DELAY);
@@ -101,39 +107,45 @@ namespace vi_link {
         const auto beats = state.beatAtTime(time, quantum);
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
 
-        bool updateLED = time.count() - prev_time > 33000;
-        if (updateLED) {
-          FastLED.clear(true);
-        }
-
         beats_last = floor(beats);
 
         if (beats_last == beats_next) {
-          rand_pos = (float) std::rand() / RAND_MAX;
-          std::cout << "Boom! Tetris for Jeff! " << rand_pos << std::endl;
+          FastLED.clear();
+          rand_pos = floor((NUM_LEDS-1) * ((float) std::rand() / RAND_MAX)*0.5);
 
-          pos = floor((NUM_LEDS-1) * rand_pos);
+          time_between_beats = time.count() - prev_time;  
+          next_beat_in_time = time.count() + time_between_beats;
+          int lighting_leds = 10; 
+          time_for_each_led = (time_between_beats / lighting_leds) * 4;
 
+          prev_time = time.count();  
+          led_idx = 0;
+          updateLED = true;
         }
 
-        if( xQueueReceive( message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+
+        if (time.count() >= prev_time + (time_for_each_led*led_idx)) {
+          updateLED = true; 
+          //std::cout << "Turning on LED nr" << (int)rand_pos1+led_idx << " at time " << time.count() << " - next led at " << prev_time + (time_for_each_led*(led_idx+1)) << std::endl;
+        }
+
+        if( xQueueReceive( mqtt->message_q, &( value ), ( TickType_t ) 1) == pdPASS )
         {
             pos *= value;
+            updateLED = true;
         }
 
         beats_next = ceil(beats);
 
-       // std::cout << std::fixed << "prev beats: " << beats_last << " |" << 
-       // "next beat: " << std::endl;
-        //std::cout << std::defaultfloat << "| phase: " << floor(phase) << std::endl;
-
         if (updateLED) {
-          leds[pos] = CRGB::Red;
+          leds[rand_pos + led_idx] = CRGB::Red;
+          led_idx += 1;
           FastLED.show();
-          prev_time = time.count();
+
+          updateLED = false;
         }
 
-        portYIELD();
+        //portYIELD();
       }
     }
 
