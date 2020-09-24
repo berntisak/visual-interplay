@@ -99,6 +99,7 @@ namespace vi_link {
       int led_idx = 0;
 
       vi_anim::Character one = new vi_anim::Character();
+      one.set_size(0.25, 0, 1);
       
       while (true)
       {
@@ -111,8 +112,7 @@ namespace vi_link {
 
         if( xQueueReceive( mqtt->message_q, &( value ), ( TickType_t ) 1) == pdPASS )
         {
-            one.set_position(value, beats, 5);
-            one.set_size(value, beats, 5);
+            one.set_position(value, beats, 4);
         }
 
         // Everything below should be FPS constrained:
@@ -124,6 +124,8 @@ namespace vi_link {
             leds[i] = one.lfb[i];
 
         }
+
+        FastLED.show();
 
         /*beats_last = floor(beats);
 
