@@ -30,7 +30,6 @@ extern "C" void app_main()
 
 
   vi_wifi::init();
-  //vi_mqtt::init(message_q);
   auto mqtt = new vi_mqtt::MQTTConnect();
   auto start_link = new vi_link::LinkConnect(mqtt);
 
