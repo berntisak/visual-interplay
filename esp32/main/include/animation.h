@@ -3,13 +3,15 @@
 #define _VI_ANIMATION_H
 
 #include "configuration.h"
-#include "led_control.h"
 
 namespace vi_anim {
 
   struct Param {
-    float value;
-    uint8_t dest_time;
+    float dest_value;
+    float start_beat;
+    uint8_t dest_beat;
+    float start_value;
+    float current_value;
   }
 
   class Character {
@@ -22,10 +24,10 @@ namespace vi_anim {
 
       Character();
 
-      void set_position(float v, uint8_t b);
-      void set_size(float v, uint8_t b);
+      void set_position(float v, float sb, uint8_t eb);
+      void set_size(float v, float sb, uint8_t eb);
 
-      void update();
+      void update(float current_beats);
 
   };
 

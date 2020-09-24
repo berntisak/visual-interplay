@@ -3,6 +3,7 @@
 namespace vi_link {
 
     vi_mqtt::MQTTConnect *mqtt;
+    CRGB leds[NUM_LEDS];
 
     float value = 0.0f;
     uint8_t pos = 0;
@@ -96,6 +97,8 @@ namespace vi_link {
       long next_beat_in_time = 0;
       long time_for_each_led = 0;
       int led_idx = 0;
+
+      vi_anim::Character one = new vi_anim::Character();
       
       while (true)
       {
@@ -106,7 +109,23 @@ namespace vi_link {
         const auto beats = state.beatAtTime(time, quantum);
         const auto phase = state.phaseAtTime(link.clock().micros(), 1.);
 
-        beats_last = floor(beats);
+        if( xQueueReceive( mqtt->message_q, &( value ), ( TickType_t ) 1) == pdPASS )
+        {
+            one.set_position(value, beats, 5);
+            one.set_size(value, beats, 5);
+        }
+
+        // Everything below should be FPS constrained:
+
+        one.update(beats);
+
+        for (int i = 0; i < NUM_LEDS; i++) {
+
+            leds[i] = one.lfb[i];
+
+        }
+
+        /*beats_last = floor(beats);
 
         if (beats_last == beats_next) {
           FastLED.clear();
@@ -141,7 +160,7 @@ namespace vi_link {
           FastLED.show();
 
           updateLED = false;
-        }
+        }*/
 
         //portYIELD();
       }
