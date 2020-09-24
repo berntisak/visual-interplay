@@ -6,6 +6,7 @@
 #include <driver/timer.h>
 #include <freertos/queue.h>
 
+#include "configuration.h"
 #include "mqtt_connect.h"
 #include "led_control.h" 
 
